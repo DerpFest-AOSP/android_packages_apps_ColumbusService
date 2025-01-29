@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    Copyright (C) 2020 The Proton AOSP Project
+
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+
+        http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+-->
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+
+    <!-- Entry points in Settings -->
+    <string name="settings_entry_title">Schnelltippen</string>
+    <string name="settings_entry_summary_on">Ein / <xliff:g id="action" example="Take screenshot">%1$s</xliff:g></string>
+    <string name="settings_entry_summary_off">Aus</string>
+    <string name="settings_search_keywords">Quick Tap, back tap, tap, gesture, assist, assistant</string>
+
+    <!-- Items in Active Edge gesture settings -->
+    <string name="setting_enabled_title">Schnelltippen verwenden</string>
+    <string name="setting_footer_content">Um eine Aktion auszuführen, tippe schnell doppelt auf die Rückseite deines Smartphones</string>
+    <string name="setting_sensitivity_title">Empfindlichkeit</string>
+    <string name="setting_sensitivity_light">Leichtes Tippen</string>
+    <string name="setting_sensitivity_heavy">Starkes Tippen</string>
+    <string name="setting_screen_off_title">Bei ausgeschaltetem Bildschirm zulassen</string>
+    <string name="setting_screen_off_summary">Kann Anzahl der Fehlauslöser erhöhen</string>
+    <string name="setting_screen_off_blocked_summary">Durch aktuelle Aktion blockiert</string>
+    <string name="setting_action_title">Aktion bei Doppeltippen auf der Rückseite des Geräts</string>
+
+    <!-- App picker -->
+    <string name="app_picker_dialog_title">App auswählen</string>
+    <string name="app_select_title">App auswählen</string>
+    <string name="activity_select_title">Aktion auswählen</string>
+    <string name="launch_app_select_title">@string/app_picker_dialog_title</string>
+    <string name="launch_app_select_summary">Lege fest, welche App mit der Funktion „Schnelltippen“ geöffnet werden soll</string>
+
+    <!-- Actions -->
+    <string name="action_screenshot_name">Screenshot erstellen</string>
+    <string name="action_assistant_name">Digitalen Assistenten aufrufen</string>
+    <string name="action_media_name">Medien wiedergeben oder pausieren</string>
+    <string name="action_notifications_name">Benachrichtigungen anzeigen</string>
+    <string name="action_overview_name">Anwendungsverlauf öffnen</string>
+    <string name="action_camera_name">Kamera öffnen</string>
+    <string name="action_power_menu_name">Ein-/Aus-Menü öffnen</string>
+    <string name="action_mute_name">Anrufe und Benachrichtigungen stummschalten</string>
+    <string name="action_flashlight_name">Taschenlampe ein-/ausschalten</string>
+    <string name="action_screen_name">Display ein-/ausschalten</string>
+    <string name="action_launch_name">App öffnen</string>
+
+    <!-- Toast -->
+    <string name="gesture_detected">„Schnelltippen“ wurde erkannt</string>
+
+    <!-- Haptic feedback intensity -->
+    <string name="pref_title_haptic_intensity">Intensität des haptischen Feedbacks</string>
+    <string-array name="pref_haptic_intensity_entries">
+        <item>Leicht</item>
+        <item>Mittel</item>
+        <item>Stark</item>
+    </string-array>
+</resources>
