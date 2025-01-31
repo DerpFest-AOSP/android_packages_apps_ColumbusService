@@ -35,6 +35,7 @@ import org.protonaosp.columbus.getDePrefs
 import org.protonaosp.columbus.getEnabled
 import org.protonaosp.columbus.getLaunchActionAppName
 import org.protonaosp.columbus.getSensitivity
+import org.protonaosp.columbus.getHapticIntensity
 
 class SettingsFragment :
     PreferenceFragmentCompat(), SharedPreferences.OnSharedPreferenceChangeListener {
@@ -120,7 +121,14 @@ class SettingsFragment :
 
         // Haptic Intensity
         findPreference<ListPreference>(getString(R.string.pref_key_haptic_intensity))?.apply {
+            value = prefs.getHapticIntensity(mContext)
             summary = entry
+            setOnPreferenceChangeListener { preference, newValue ->
+                val listPreference = preference as ListPreference
+                val index = listPreference.findIndexOfValue(newValue.toString())
+                listPreference.summary = listPreference.entries[index]
+                true
+            }
         }
     }
 }
