@@ -17,43 +17,50 @@ class SystemKeyPress(context: Context, handler: Handler) : TransientGate(context
 
     private var inputEventReceiver: InputChannelCompat.InputEventReceiver? = null
     private var inputMonitor: InputMonitorCompat? = null
+    private var isListening: Boolean = false
+
     private val inputEventListener =
         object : InputChannelCompat.InputEventListener {
             override fun onInputEvent(ev: InputEvent) {
-                if (ev == null || ev !is KeyEvent) {
-                    return
-                }
-                if (isBlockingKeys(ev as KeyEvent)) {
-                    blockForMillis(GATE_DURATION)
+                val keyEvent: KeyEvent = ev as? KeyEvent ?: return
+
+                inputEventReceiver?.let {
+                    if (isBlockingKeys(keyEvent)) {
+                        blockForMillis(GATE_DURATION)
+                    }
                 }
             }
         }
 
     private fun dispose() {
-        if (inputEventReceiver != null) {
-            inputEventReceiver!!.dispose()
-        }
-        if (inputMonitor != null) {
-            inputMonitor!!.dispose()
-        }
+        inputEventReceiver?.dispose()
+        inputMonitor?.dispose()
     }
 
     private fun isBlockingKeys(keyEvent: KeyEvent): Boolean {
-        return blockingKeys.contains(keyEvent.getKeyCode())
+        return blockingKeys.contains(keyEvent.keyCode)
     }
 
     override fun onActivate() {
-        if (inputEventReceiver != null) return
+        if (isListening) return
+
         inputMonitor = InputMonitorCompat(TAG, 0)
         inputEventReceiver =
-            inputMonitor!!.getInputReceiver(
+            inputMonitor?.getInputReceiver(
                 Looper.getMainLooper(),
                 Choreographer.getInstance(),
                 inputEventListener,
             )
+
+        isListening = inputEventReceiver != null
+        if (isListening) {
+            setBlocking(false)
+        }
     }
 
     override fun onDeactivate() {
+        isListening = false
+        setBlocking(false)
         dispose()
         inputEventReceiver = null
         inputMonitor = null
