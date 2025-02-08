@@ -99,7 +99,7 @@ class ColumbusService : Service(), SharedPreferences.OnSharedPreferenceChangeLis
                 TelephonyActivity(this, handler),
                 VrMode(this, handler),
                 PocketDetection(this, handler),
-                TableDetectionGate(this, handler),
+                TableDetection(this, handler),
             )
 
         updateHapticIntensity()

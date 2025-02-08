@@ -6,6 +6,7 @@ import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
 import android.hardware.SensorManager
 import android.os.Handler
+import kotlin.math.abs
 import kotlin.math.acos
 import kotlin.math.roundToInt
 import kotlin.math.sqrt
@@ -13,13 +14,13 @@ import kotlin.math.sqrt
 // References:
 // https://stackoverflow.com/questions/30948131/how-to-know-if-android-device-is-flat-on-table
 // https://stackoverflow.com/questions/11175599/how-to-measure-the-tilt-of-the-phone-in-xy-plane-using-accelerometer-in-android/15149421#15149421
-class TableDetectionGate(context: Context, val handler: Handler) : Gate(context, handler, 2) {
+class TableDetection(context: Context, val handler: Handler) : Gate(context, handler, 2) {
 
     private val sensorManager = context.getSystemService(Context.SENSOR_SERVICE) as SensorManager
     private val accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER)
     private val sensorListener =
         object : SensorEventListener {
-            private var isFlat: Boolean = false
+            private var wasFlat: Boolean = false
 
             override fun onAccuracyChanged(sensor: Sensor?, accuracy: Int) {}
 
@@ -33,12 +34,20 @@ class TableDetectionGate(context: Context, val handler: Handler) : Gate(context,
                 val norm = sqrt(x * x + y * y + z * z)
 
                 // Normalize the accelerometer vector
-                z /= norm
-                val inclination = Math.toDegrees(acos(z)).roundToInt()
+                val inclination =
+                    if (norm > 0) {
+                        Math.toDegrees(acos(z / norm)).roundToInt()
+                    } else {
+                        0
+                    }
 
-                val isFlat = inclination < 3 || inclination > 177
-                if (isFlat != this.isFlat) {
-                    this.isFlat = isFlat
+                val isFlat =
+                    norm > 8.0 &&
+                        (inclination < 3 || inclination > 177) &&
+                        abs(x / norm) < 0.3 &&
+                        abs(y / norm) < 0.3
+                if (wasFlat != isFlat) {
+                    wasFlat = isFlat
                     setBlocking(isFlat)
                 }
             }
@@ -55,6 +64,7 @@ class TableDetectionGate(context: Context, val handler: Handler) : Gate(context,
     }
 
     override fun onDeactivate() {
+        setBlocking(false)
         sensorManager.unregisterListener(sensorListener)
     }
 }
