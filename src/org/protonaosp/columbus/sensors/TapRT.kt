@@ -150,7 +150,7 @@ open class TapRT(val context: Context, val sizeWindowNsUpdate: Long, val heurist
         if (predict == null || predict.isEmpty()) {
             return
         }
-        result = Util.getMaxId(predict!!.get(0))
+        result = Util.getMaxId(predict.get(0))
     }
 
     fun reset(clearFv: Boolean) {
