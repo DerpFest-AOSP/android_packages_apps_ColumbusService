@@ -12,6 +12,7 @@ import org.protonaosp.columbus.TAG
 class VrMode(context: Context, handler: Handler) : Gate(context, handler, 2) {
     private var inVrMode: Boolean = false
     private var vrManager: IVrManager? = null
+
     private val vrStateCallbacks =
         object : IVrStateCallbacks.Stub() {
             override fun onVrStateChanged(enabled: Boolean) {
@@ -20,13 +21,13 @@ class VrMode(context: Context, handler: Handler) : Gate(context, handler, 2) {
             }
         }
 
-    fun setVrManager() {
-        val service = ServiceManager.getService(Context.VR_SERVICE) ?: return
+    private fun initializeVrManager() {
+        val service = ServiceManager.getService(Context.VR_SERVICE)
         vrManager = IVrManager.Stub.asInterface(service)
     }
 
     init {
-        setVrManager()
+        initializeVrManager()
     }
 
     fun updateBlocking() {
@@ -34,12 +35,12 @@ class VrMode(context: Context, handler: Handler) : Gate(context, handler, 2) {
     }
 
     override fun onActivate() {
-        if (vrManager != null) {
+        vrManager?.let {
             try {
-                inVrMode = vrManager!!.getVrModeState()
-                vrManager!!.registerListener(vrStateCallbacks)
+                inVrMode = it.getVrModeState()
+                it.registerListener(vrStateCallbacks)
             } catch (e: RemoteException) {
-                Log.e(TAG, "Could not register IVrManager listener", e)
+                Log.e(TAG, "Error registering IVrManager listener: ${e.message}", e)
                 inVrMode = false
             }
         }
@@ -47,12 +48,12 @@ class VrMode(context: Context, handler: Handler) : Gate(context, handler, 2) {
     }
 
     override fun onDeactivate() {
-        try {
-            if (vrManager != null) {
-                vrManager!!.unregisterListener(vrStateCallbacks)
+        vrManager?.let {
+            try {
+                it.unregisterListener(vrStateCallbacks)
+            } catch (e: RemoteException) {
+                Log.e(TAG, "Error unregistering IVrManager listener: ${e.message}", e)
             }
-        } catch (e: RemoteException) {
-            Log.e(TAG, "Could not unregister IVrManager listener", e)
         }
         inVrMode = false
     }
