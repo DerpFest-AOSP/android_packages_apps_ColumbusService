@@ -135,8 +135,6 @@ class ColumbusService : Service(), SharedPreferences.OnSharedPreferenceChangeLis
             wakelock.release()
         }
 
-        unregisterScreenCallback()
-
         // Clear references
         action = DummyAction(this)
         super.onDestroy()
@@ -205,9 +203,9 @@ class ColumbusService : Service(), SharedPreferences.OnSharedPreferenceChangeLis
 
     private fun updateScreenCallback() {
         val allowScreenOff = prefs.getAllowScreenOff(this)
-        val shouldListenForScreenEvents = !allowScreenOff || !action.canRunWhenScreenOff()
 
-        if (shouldListenForScreenEvents && !screenCallbackRegistered) {
+        // Listen if either condition *can't* run when screen is off
+        if ((!allowScreenOff || !action.canRunWhenScreenOff()) && !screenCallbackRegistered) {
             val filter =
                 IntentFilter().apply {
                     addAction(Intent.ACTION_SCREEN_ON)
@@ -216,15 +214,8 @@ class ColumbusService : Service(), SharedPreferences.OnSharedPreferenceChangeLis
             Log.d(TAG, "Listening to screen on/off events")
             registerReceiver(screenCallback, filter)
             screenCallbackRegistered = true
-        } else if (!shouldListenForScreenEvents && screenCallbackRegistered) {
+        } else if (screenCallbackRegistered) {
             Log.d(TAG, "Stopped listening to screen on/off events")
-            unregisterReceiver(screenCallback)
-            screenCallbackRegistered = false
-        }
-    }
-
-    private fun unregisterScreenCallback() {
-        if (screenCallbackRegistered) {
             unregisterReceiver(screenCallback)
             screenCallbackRegistered = false
         }
