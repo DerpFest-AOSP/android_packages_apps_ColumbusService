@@ -2,17 +2,15 @@ package org.protonaosp.columbus.actions
 
 import android.content.Context
 import android.content.Intent
-import android.os.PowerManager
 import org.protonaosp.columbus.R
 import org.protonaosp.columbus.getDePrefs
 import org.protonaosp.columbus.getLaunchActionApp
 import org.protonaosp.columbus.getLaunchActionAppShortcut
 
 class LaunchAction(context: Context) : Action(context) {
-    val pm = context.getSystemService(Context.POWER_SERVICE) as PowerManager
     val app_default = context.getString(R.string.launch_app_default)
 
-    override fun canRun() = pm.isInteractive()
+    override fun canRun() = isDeviceInteractiveAndUnlocked(context)
 
     override fun canRunWhenScreenOff() = false
 
