@@ -49,7 +49,7 @@ class APSensor(val context: Context, var sensitivity: Float, val handler: Handle
                 event.timestamp,
                 samplingIntervalNs,
             )
-            val timing: Int = tap.checkTapTiming(event.timestamp)
+            val timing: Int = tap.checkDoubleTapTiming(event.timestamp)
             when (timing) {
                 1 -> handler.post { reportGestureDetected(2) }
                 2 -> handler.post { reportGestureDetected(1) }
@@ -78,8 +78,8 @@ class APSensor(val context: Context, var sensitivity: Float, val handler: Handle
     override fun startListening() {
         callback.setListening(true, SensorManager.SENSOR_DELAY_FASTEST)
         (tap as? TapRT)?.run {
-            lowpassAcc.para = 1.0f
-            lowpassGyro.para = 1.0f
+            lowpassAcc.para = 1f
+            lowpassGyro.para = 1f
             highpassAcc.para = 0.05f
             highpassGyro.para = 0.05f
             positivePeakDetector.minNoiseTolerate = sensitivity

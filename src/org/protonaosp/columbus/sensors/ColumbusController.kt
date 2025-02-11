@@ -53,8 +53,8 @@ class ColumbusController(val context: Context, val sensor: ColumbusSensor, val h
 
         if (throttleMs == 0L) return false
 
-        var currentMs: Long = SystemClock.uptimeMillis()
         var lastMs: Long = lastTimestampMap.get(tapTiming)
+        var currentMs: Long = SystemClock.uptimeMillis()
         lastTimestampMap.put(tapTiming, currentMs)
         return currentMs - lastMs <= throttleMs
     }

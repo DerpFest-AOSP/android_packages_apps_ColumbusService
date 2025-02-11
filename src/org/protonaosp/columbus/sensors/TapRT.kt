@@ -7,8 +7,8 @@ import java.util.ArrayList
 import java.util.Deque
 import org.protonaosp.columbus.actions.*
 
-open class TapRT(val context: Context, val sizeWindowNsUpdate: Long, val heuristicMode: Boolean) :
-    EventIMURT() {
+open class TapRT(val context: Context, val sizeWindowNs: Long, val heuristicMode: Boolean) :
+    EventIMURT(sizeWindowNs, 50, 50 * 6) {
 
     private val minTimeGapNs: Long = 100000000L
     private val maxTimeGapNs: Long = 500000000L
@@ -22,47 +22,43 @@ open class TapRT(val context: Context, val sizeWindowNsUpdate: Long, val heurist
 
     init {
         tflite = TfClassifier(context.getAssets(), getModelFileName(context))
-        sizeWindowNs = sizeWindowNsUpdate
-        sizeFeatureWindow = 50
-        numberFeature = 50 * 6
-        lowpassAcc.para = 1.0f
-        lowpassGyro.para = 1.0f
+        lowpassAcc.para = 1f
+        lowpassGyro.para = 1f
         highpassAcc.para = 0.05f
         highpassGyro.para = 0.05f
     }
 
     fun addToFeatureVector(points: ArrayDeque<Float>, max: Int, index: Int) {
         var idx = index
-        var pIt: MutableIterator<Float> = points.iterator()
-        var i: Int = 0
-        while (pIt.hasNext()) {
-            if (i < max) {
-                pIt.next()
-            } else {
-                if (i >= sizeFeatureWindow + max) {
-                    return
-                }
-                featureVector.set(idx, pIt.next())
+        var i = 0
+        for (point in points) {
+            if (i >= max && i < sizeFeatureWindow + max) {
+                featureVector[idx] = point
                 idx++
             }
             i++
         }
     }
 
-    fun checkTapTiming(timestamp: Long): Int {
-        var timestampFirst: MutableIterator<Long> = timestampsBackTap.iterator()
+    fun checkDoubleTapTiming(timestamp: Long): Int {
+        var timestampFirst = timestampsBackTap.iterator()
         while (timestampFirst.hasNext()) {
-            if (timestamp - timestampFirst.next() > maxTimeGapNs) {
+            val storedTimestamp = timestampFirst.next()
+            if (timestamp - storedTimestamp > maxTimeGapNs) {
                 timestampFirst.remove()
             }
         }
+
         if (timestampsBackTap.isEmpty()) {
             return 0
         }
 
-        var timestampSecond: MutableIterator<Long> = timestampsBackTap.iterator()
+        var lastTimestamp = timestampsBackTap.last()
+
+        val timestampSecond = timestampsBackTap.iterator()
         while (timestampSecond.hasNext()) {
-            if (timestampsBackTap.last() - timestampSecond.next() > minTimeGapNs) {
+            val storedTimestamp = timestampSecond.next()
+            if (lastTimestamp - storedTimestamp > minTimeGapNs) {
                 timestampsBackTap.clear()
                 return 2
             }
@@ -72,17 +68,15 @@ open class TapRT(val context: Context, val sizeWindowNsUpdate: Long, val heurist
     }
 
     fun processKeySignalHeuristic() {
+        val sample = resampleAcc.results
         var update: Point3f =
             highpassAcc.update(
                 lowpassAcc.update(
-                    slopeAcc.update(
-                        resampleAcc.results.point,
-                        2400000.0f / resampleAcc.interval.toFloat(),
-                    )
+                    slopeAcc.update(sample.point, 2400000f / resampleAcc.interval.toFloat())
                 )
             )
-        positivePeakDetector.update(update.z.toFloat(), resampleAcc.results.time)
-        negativePeakDetector.update(-update.z.toFloat(), resampleAcc.results.time)
+        positivePeakDetector.update(update.z.toFloat(), sample.time)
+        negativePeakDetector.update(-update.z.toFloat(), sample.time)
         accZs.add(update.z.toFloat())
         val interval: Int = (sizeWindowNs / resampleAcc.interval).toInt()
         while (accZs.size > interval) {
@@ -92,7 +86,7 @@ open class TapRT(val context: Context, val sizeWindowNsUpdate: Long, val heurist
             recognizeTapHeuristic()
         }
         if (result == TapClass.Back) {
-            timestampsBackTap.addLast(resampleAcc.results.time)
+            timestampsBackTap.addLast(sample.time)
         }
     }
 
@@ -102,10 +96,10 @@ open class TapRT(val context: Context, val sizeWindowNsUpdate: Long, val heurist
         if (positvePeakId == 4) {
             featureVector = ArrayList(accZs)
             result =
-                if (negativePeakId <= 0 || negativePeakId >= 3) {
-                    TapClass.Others
-                } else {
+                if (negativePeakId > 0 && negativePeakId < 3) {
                     TapClass.Back
+                } else {
+                    TapClass.Others
                 }
         }
     }
@@ -127,10 +121,9 @@ open class TapRT(val context: Context, val sizeWindowNsUpdate: Long, val heurist
         if (accTuned < 0 || gyroTuned < 0) {
             return
         }
-        var sizeFW: Int = sizeFeatureWindow
         if (
-            accTuned + sizeFW > accSizeZ ||
-                sizeFW + gyroTuned > accSizeZ ||
+            accTuned + sizeFeatureWindow > accSizeZ ||
+                sizeFeatureWindow + gyroTuned > accSizeZ ||
                 !wasPeakApproaching ||
                 positvePeakMax > frameAlignPeak
         ) {
@@ -143,7 +136,7 @@ open class TapRT(val context: Context, val sizeWindowNsUpdate: Long, val heurist
         addToFeatureVector(gyroXs, gyroTuned, sizeFeatureWindow * 3)
         addToFeatureVector(gyroYs, gyroTuned, sizeFeatureWindow * 4)
         addToFeatureVector(gyroZs, gyroTuned, sizeFeatureWindow * 5)
-        var scaleGyroData: ArrayList<Float> = scaleGyroData(featureVector, 10.0f)
+        var scaleGyroData: ArrayList<Float> = scaleGyroData(featureVector, 10f)
         featureVector = scaleGyroData
         var predict: ArrayList<ArrayList<Float>>? = tflite?.predict(scaleGyroData, 7)
         if (predict == null || predict.isEmpty()) {
@@ -159,7 +152,7 @@ open class TapRT(val context: Context, val sizeWindowNsUpdate: Long, val heurist
         } else {
             featureVector = arrayListOf<Float>()
             for (i in 0 until numberFeature) {
-                featureVector.add(0.0f)
+                featureVector.add(0f)
             }
         }
     }
@@ -238,13 +231,13 @@ open class TapRT(val context: Context, val sizeWindowNsUpdate: Long, val heurist
         if (syncTime == 0L) {
             syncTime = rawLastT
             resampleAcc.resampledLastT = rawLastT
-            resampleGyro.resampledLastT = syncTime
+            resampleGyro.resampledLastT = rawLastT
             slopeAcc.init(resampleAcc.results.point)
             slopeGyro.init(resampleGyro.results.point)
-            lowpassAcc.init(Point3f(0.0f, 0.0f, 0.0f))
-            lowpassGyro.init(Point3f(0.0f, 0.0f, 0.0f))
-            highpassAcc.init(Point3f(0.0f, 0.0f, 0.0f))
-            highpassGyro.init(Point3f(0.0f, 0.0f, 0.0f))
+            lowpassAcc.init(Point3f(0f, 0f, 0f))
+            lowpassGyro.init(Point3f(0f, 0f, 0f))
+            highpassAcc.init(Point3f(0f, 0f, 0f))
+            highpassGyro.init(Point3f(0f, 0f, 0f))
             return
         }
 

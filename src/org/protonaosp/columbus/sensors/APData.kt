@@ -38,9 +38,9 @@ fun getApSensorThrottleMs(context: Context): Long =
 data class Point3f(var x: Float, var y: Float, var z: Float)
 
 class Highpass1C {
-    var _para: Float = 1.0f
-    var lastX: Float = 0.0f
-    var lastY: Float = 0.0f
+    var _para: Float = 1f
+    var lastX: Float = 0f
+    var lastY: Float = 0f
 
     fun init(last: Float) {
         lastX = last
@@ -49,7 +49,7 @@ class Highpass1C {
 
     fun update(update: Float): Float {
         val updatedParam: Float = _para
-        if (updatedParam == 1.0f) {
+        if (updatedParam == 1f) {
             return update
         }
         val updatedY: Float = (lastY * updatedParam) + (updatedParam * (update - lastX))
@@ -70,7 +70,7 @@ class Highpass3C {
         highpassZ.init(point.z)
     }
 
-    var para: Float = 1.0f
+    var para: Float = 1f
         set(value) {
             highpassX._para = value
             highpassY._para = value
@@ -87,8 +87,8 @@ class Highpass3C {
 }
 
 open class Lowpass1C {
-    var _para: Float = 1.0f
-    var lastX: Float = 0.0f
+    var _para: Float = 1f
+    var lastX: Float = 0f
 
     fun init(last: Float) {
         lastX = last
@@ -96,10 +96,10 @@ open class Lowpass1C {
 
     fun update(update: Float): Float {
         var updatedParam: Float = _para
-        if (updatedParam == 1.0f) {
+        if (updatedParam == 1f) {
             return update
         }
-        var updateX: Float = ((1.0f - updatedParam) * lastX) + (updatedParam * update)
+        var updateX: Float = ((1f - updatedParam) * lastX) + (updatedParam * update)
         lastX = updateX
         return updateX
     }
@@ -116,7 +116,7 @@ class Lowpass3C : Lowpass1C() {
         lowpassZ.init(point.z)
     }
 
-    var para: Float = 1.0f
+    var para: Float = 1f
         set(value) {
             lowpassX._para = value
             lowpassY._para = value
@@ -137,8 +137,8 @@ open class Resample1C {
     var interval = 0L
     var rawLastT: Long = 0L
     var resampledLastT: Long = 0L
-    var rawLastX = 0.0f
-    var resampledThisX = 0.0f
+    var rawLastX = 0f
+    var resampledThisX = 0f
 
     fun init(x: Float, time: Long, interval: Long) {
         rawLastX = x
@@ -150,10 +150,10 @@ open class Resample1C {
 }
 
 class Resample3C : Resample1C() {
-    var rawLastY: Float = 0.0f
-    var rawLastZ: Float = 0.0f
-    var resampledThisY: Float = 0.0f
-    var resampledThisZ: Float = 0.0f
+    var rawLastY: Float = 0f
+    var rawLastZ: Float = 0f
+    var resampledThisY: Float = 0f
+    var resampledThisZ: Float = 0f
 
     val results: Sample3C
         get() = Sample3C(resampledThisX, resampledThisY, resampledThisZ, resampledLastT)
@@ -202,8 +202,8 @@ class Resample3C : Resample1C() {
 }
 
 class Slope1C {
-    var deltaX: Float = 0.0f
-    var rawLastX: Float = 0.0f
+    var deltaX: Float = 0f
+    var rawLastX: Float = 0f
 
     fun init(lastX: Float) {
         rawLastX = lastX
@@ -235,20 +235,20 @@ class Slope3C {
 }
 
 class PeakDetector {
-    var minNoiseTolerate: Float = 0.0f
-    var noiseTolerate: Float = 0.0f
+    var minNoiseTolerate: Float = 0f
+    var noiseTolerate: Float = 0f
     var maxTapDuration: Long = 120000000L
     var peakId: Int = -1
     var numberPeak: Int = 0
     var timestamp: Long = 0L
-    var amplitude: Float = 0.0f
+    var amplitude: Float = 0f
     var windowSize: Int = 0
-    var amplitudeReference: Float = 0.0f
+    var amplitudeReference: Float = 0f
     var gotNewHighValue: Boolean = false
 
     fun reset() {
-        amplitude = 0.0f
-        amplitudeReference = 0.0f
+        amplitude = 0f
+        amplitudeReference = 0f
         numberPeak = 0
         timestamp = 0L
         peakId = 0
@@ -261,13 +261,13 @@ class PeakDetector {
             reset()
         }
         noiseTolerate = minNoiseTolerate
-        var maxAmplitude: Float = Math.max(amplitude, lastZ) / 5.0f
+        var maxAmplitude: Float = Math.max(amplitude, lastZ) / 5f
         if (maxAmplitude > minNoiseTolerate) {
             noiseTolerate = maxAmplitude
         }
         var updatedAmRef: Float = amplitudeReference - lastZ
         val savednoiseTolerate = noiseTolerate
-        if (updatedAmRef < 0.0f) {
+        if (updatedAmRef < 0f) {
             amplitudeReference = lastZ
             gotNewHighValue = true
             var updatedTsmp: Long = timestamp

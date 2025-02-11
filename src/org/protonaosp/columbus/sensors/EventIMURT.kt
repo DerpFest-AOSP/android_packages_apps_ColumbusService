@@ -4,11 +4,7 @@ import java.util.ArrayDeque
 import java.util.ArrayList
 import org.protonaosp.columbus.actions.*
 
-open class EventIMURT {
-    var numberFeature: Int = 300
-    var sizeFeatureWindow: Int = 50
-    var sizeWindowNs: Long = 0L
-
+open class EventIMURT(val _sizeWindowNs: Long, val numberFeature: Int, val sizeFeatureWindow: Int) {
     var featureVector: ArrayList<Float> = arrayListOf<Float>()
     val accXs: ArrayDeque<Float> = ArrayDeque<Float>()
     val accYs: ArrayDeque<Float> = ArrayDeque<Float>()
@@ -30,19 +26,17 @@ open class EventIMURT {
     var tflite: TfClassifier? = null
 
     fun updateAcc() {
+        val sample = resampleAcc.results
         var update: Point3f =
             highpassAcc.update(
                 lowpassAcc.update(
-                    slopeAcc.update(
-                        resampleAcc.results.point,
-                        2400000.0f / resampleAcc.interval.toFloat(),
-                    )
+                    slopeAcc.update(sample.point, 2400000f / resampleAcc.interval.toFloat())
                 )
             )
         accXs.add(update.x.toFloat())
         accYs.add(update.y.toFloat())
         accZs.add(update.z.toFloat())
-        val interval: Int = (sizeWindowNs / resampleAcc.interval).toInt()
+        val interval: Int = (_sizeWindowNs / resampleAcc.interval).toInt()
         while (accXs.size > interval) {
             accXs.removeFirst()
             accYs.removeFirst()
@@ -51,19 +45,17 @@ open class EventIMURT {
     }
 
     fun updateGyro() {
+        val sample = resampleAcc.results
         var update: Point3f =
             highpassGyro.update(
                 lowpassGyro.update(
-                    slopeGyro.update(
-                        resampleGyro.results.point,
-                        2400000.0f / resampleGyro.interval.toFloat(),
-                    )
+                    slopeGyro.update(sample.point, 2400000f / resampleGyro.interval.toFloat())
                 )
             )
         gyroXs.add(update.x.toFloat())
         gyroYs.add(update.y.toFloat())
         gyroZs.add(update.z.toFloat())
-        val interval: Int = (sizeWindowNs / resampleGyro.interval).toInt()
+        val interval: Int = (_sizeWindowNs / resampleGyro.interval).toInt()
         while (gyroXs.size > interval) {
             gyroXs.removeFirst()
             gyroYs.removeFirst()
