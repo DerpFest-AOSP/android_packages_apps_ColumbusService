@@ -3,10 +3,10 @@ package org.protonaosp.columbus.sensors
 import android.content.Context
 import android.os.Handler
 import android.os.SystemClock
-import android.util.Log
 import android.util.SparseLongArray
 import org.protonaosp.columbus.TAG
 import org.protonaosp.columbus.actions.*
+import org.protonaosp.columbus.dlog
 import org.protonaosp.columbus.gates.*
 
 class ColumbusController(val context: Context, val sensor: ColumbusSensor, val handler: Handler) {
@@ -31,7 +31,7 @@ class ColumbusController(val context: Context, val sensor: ColumbusSensor, val h
         object : ColumbusSensor.Listener {
             override fun onGestureDetected(sensor: ColumbusSensor, msg: Int) {
                 if (isThrottled(msg)) {
-                    // Log.w(TAG, "Gesture $msg throttled")
+                    dlog(TAG, "Gesture $msg throttled")
                     return
                 }
                 if (blockingGate()) return
@@ -100,7 +100,7 @@ class ColumbusController(val context: Context, val sensor: ColumbusSensor, val h
     private fun blockingGate(): Boolean {
         for (it in softGates) {
             if (it.isBlocking()) {
-                Log.d(TAG, "Blocked by gate")
+                dlog(TAG, "Blocked by ${it.toString()}")
                 return true
             }
         }

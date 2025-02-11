@@ -30,7 +30,6 @@ import android.os.PowerManager
 import android.os.VibrationEffect
 import android.os.Vibrator
 import android.os.VibratorManager
-import android.util.Log
 import org.protonaosp.columbus.actions.*
 import org.protonaosp.columbus.gates.*
 import org.protonaosp.columbus.sensors.APSensor
@@ -82,13 +81,13 @@ class ColumbusService : Service(), SharedPreferences.OnSharedPreferenceChangeLis
         handler = Handler(Looper.getMainLooper())
         prefs = getDePrefs()
 
-        Log.d(TAG, "Initializing Quick Tap gesture")
+        dlog(TAG, "Initializing Quick Tap gesture")
 
         if (useApSensor(this)) {
-            Log.d(TAG, "Initializing AP Sensor")
+            dlog(TAG, "Initializing AP Sensor")
             sensor = APSensor(this, sensitivity, handler)
         } else {
-            Log.d(TAG, "Initializing CHRE Sensor")
+            dlog(TAG, "Initializing CHRE Sensor")
             sensor = CHRESensor(this, sensitivity, handler)
         }
         controller = ColumbusController(this, sensor, handler)
@@ -166,12 +165,12 @@ class ColumbusService : Service(), SharedPreferences.OnSharedPreferenceChangeLis
             } else {
                 (value - 5).toFloat() * 0.15f
             }
-        Log.d(TAG, "Setting sensitivity to $sensitivity")
+        dlog(TAG, "Setting sensitivity to $sensitivity")
     }
 
     private fun updateAction() {
         val key = prefs.getAction(this)
-        Log.d(TAG, "Setting action to $key")
+        dlog(TAG, "Setting action to $key")
         action = createAction(key)
 
         // For settings
@@ -187,7 +186,7 @@ class ColumbusService : Service(), SharedPreferences.OnSharedPreferenceChangeLis
     private fun updateEnabled() {
         enabled = prefs.getEnabled(this)
         if (enabled) {
-            Log.d(TAG, "Enabling gesture")
+            dlog(TAG, "Enabling gesture")
             activateGates()
             if (blockingGate()) {
                 disableGesture()
@@ -195,7 +194,7 @@ class ColumbusService : Service(), SharedPreferences.OnSharedPreferenceChangeLis
                 enableGesture()
             }
         } else {
-            Log.d(TAG, "Disabling gesture")
+            dlog(TAG, "Disabling gesture")
             deactivateGates()
             disableGesture()
         }
@@ -211,11 +210,11 @@ class ColumbusService : Service(), SharedPreferences.OnSharedPreferenceChangeLis
                     addAction(Intent.ACTION_SCREEN_ON)
                     addAction(Intent.ACTION_SCREEN_OFF)
                 }
-            Log.d(TAG, "Listening to screen on/off events")
+            dlog(TAG, "Listening to screen on/off events")
             registerReceiver(screenCallback, filter)
             screenCallbackRegistered = true
         } else if (screenCallbackRegistered) {
-            Log.d(TAG, "Stopped listening to screen on/off events")
+            dlog(TAG, "Stopped listening to screen on/off events")
             unregisterReceiver(screenCallback)
             screenCallbackRegistered = false
         }
@@ -305,7 +304,13 @@ class ColumbusService : Service(), SharedPreferences.OnSharedPreferenceChangeLis
     }
 
     private fun blockingGate(): Boolean {
-        return gates.any { it.isBlocking() }
+        for (it in gates) {
+            if (it.isBlocking()) {
+                dlog(TAG, "Blocked by ${it.javaClass.simpleName}")
+                return true
+            }
+        }
+        return false
     }
 
     private val gateListener =
@@ -324,12 +329,12 @@ class ColumbusService : Service(), SharedPreferences.OnSharedPreferenceChangeLis
                 if (enabled) {
                     when (intent.action) {
                         Intent.ACTION_SCREEN_ON -> {
-                            Log.d(TAG, "Enabling gesture due to screen on")
+                            dlog(TAG, "Enabling gesture due to screen on")
                             updateEnabled()
                         }
                         // Disable gesture entirely to save power
                         Intent.ACTION_SCREEN_OFF -> {
-                            Log.d(TAG, "Disabling gesture due to screen off")
+                            dlog(TAG, "Disabling gesture due to screen off")
                             deactivateGates()
                             disableGesture()
                         }

@@ -1,12 +1,12 @@
 package org.protonaosp.columbus.sensors
 
 import android.content.res.AssetManager
-import android.util.Log
 import java.io.FileInputStream
 import java.lang.reflect.Array
 import java.nio.channels.FileChannel
 import java.util.ArrayList
 import java.util.HashMap
+import org.protonaosp.columbus.dlog
 import org.tensorflow.lite.Interpreter
 
 class TfClassifier(assetManager: AssetManager, assetFileName: String) {
@@ -31,7 +31,7 @@ class TfClassifier(assetManager: AssetManager, assetFileName: String) {
                         )
                 )
         } catch (e: Exception) {
-            Log.e(TAG, "Failed to load tflite file: ${e.message}")
+            dlog(TAG, "Failed to load tflite file: ${e.message}")
         }
     }
 
@@ -51,16 +51,18 @@ class TfClassifier(assetManager: AssetManager, assetFileName: String) {
         try {
             interpreter.runForMultipleInputsOutputs(arrayOf<Any>(tfliteIn), tfliteOut)
         } catch (e: Exception) {
-            Log.e(TAG, "Error running inference: ${e.message}")
+            dlog(TAG, "Error running inference: ${e.message}")
             return ArrayList()
         }
 
         if (tfliteOut.isEmpty()) {
+            dlog(TAG, "Result is empty")
             return ArrayList()
         }
 
         val tfliteContent = tfliteOut[0]
         if (tfliteContent !is Array) {
+            dlog(TAG, "Result is not array")
             return ArrayList()
         }
 
