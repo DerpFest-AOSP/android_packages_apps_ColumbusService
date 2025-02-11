@@ -21,7 +21,7 @@
     <string name="default_haptic_intensity" translatable="false">2</string>
     <bool name="default_allow_screen_off" translatable="false">true</bool>
 
-    <!-- Set default TensorFlow Lite model for back tap detection.
+    <!-- Set default TensorFlow Lite model for back tap detection depends on your device's size.
          Supprted models are quickTapBaseModel, bramble, coral, crosshatch, flame and redfin.
          Default to quickTapBaseModel.
     -->
