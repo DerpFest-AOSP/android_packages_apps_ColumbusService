@@ -4,11 +4,9 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
-import android.graphics.RectF
 import android.os.Handler
 import android.os.Looper
 import android.os.PowerManager
-import android.util.DisplayMetrics
 import android.view.Choreographer
 import android.view.InputEvent
 import android.view.InputEventReceiver
@@ -37,11 +35,7 @@ class ScreenTouch(context: Context, val handler: Handler) : Gate(context, handle
                 }
                 val motionEvent: MotionEvent = ev as? MotionEvent ?: return
                 when (motionEvent.actionMasked) {
-                    MotionEvent.ACTION_DOWN -> {
-                        if (touchRegion.contains(motionEvent.getRawX(), motionEvent.getRawY())) {
-                            setBlocking(true)
-                        }
-                    }
+                    MotionEvent.ACTION_DOWN,
                     MotionEvent.ACTION_MOVE -> {
                         setBlocking(true)
                     }
@@ -54,16 +48,6 @@ class ScreenTouch(context: Context, val handler: Handler) : Gate(context, handle
                 }
             }
         }
-
-    private val displayMetrics: DisplayMetrics = context.getResources().getDisplayMetrics()
-    private val density: Float = displayMetrics.density * 32f
-    private val touchRegion: RectF =
-        RectF(
-            density,
-            density,
-            displayMetrics.widthPixels.toFloat() - density,
-            displayMetrics.heightPixels.toFloat() - density,
-        )
 
     private fun dispose() {
         if (inputEventReceiver != null) {
