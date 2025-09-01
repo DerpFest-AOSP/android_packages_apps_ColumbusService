@@ -54,7 +54,11 @@ class Settings(context: Context, handler: Handler) : Gate(context, handler, 2) {
         }
 
     init {
-        (context.applicationContext as Application).registerActivityLifecycleCallbacks(
+        val app = context.applicationContext
+        if (app !is Application) {
+            throw IllegalStateException("Application context not available")
+        }
+        app.registerActivityLifecycleCallbacks(
             activityLifecycleCallbacks
         )
     }

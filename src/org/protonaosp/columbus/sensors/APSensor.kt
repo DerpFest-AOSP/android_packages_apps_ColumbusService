@@ -25,7 +25,11 @@ class APSensor(val context: Context, var sensitivity: Float, val handler: Handle
     private var isListening: Boolean = false
 
     init {
-        sensorManager = context.getSystemService(Context.SENSOR_SERVICE) as SensorManager
+        val sensorService = context.getSystemService(Context.SENSOR_SERVICE)
+        if (sensorService !is SensorManager) {
+            throw IllegalStateException("Sensor service not available")
+        }
+        sensorManager = sensorService
         accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER)
         gyroscope = sensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE)
         heuristicMode = isHeuristicMode(context)

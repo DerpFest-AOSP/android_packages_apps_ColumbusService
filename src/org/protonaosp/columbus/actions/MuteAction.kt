@@ -13,7 +13,13 @@ import android.provider.Settings
 import android.widget.Toast
 
 class MuteAction(context: Context) : Action(context) {
-    val service = context.getSystemService(Context.AUDIO_SERVICE) as AudioManager
+    val service: AudioManager = run {
+        val audioService = context.getSystemService(Context.AUDIO_SERVICE)
+        if (audioService !is AudioManager) {
+            throw IllegalStateException("Audio service not available")
+        }
+        audioService
+    }
 
     override fun canRun() =
         context.resources.getBoolean(com.android.internal.R.bool.config_volumeHushGestureEnabled)

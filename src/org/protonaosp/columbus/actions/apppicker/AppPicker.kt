@@ -185,8 +185,13 @@ open class AppPicker : ListActivity() {
             val info = appList[position]
 
             if (view == null) {
-                val layoutInflater =
-                    context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
+                val layoutInflater: LayoutInflater = run {
+                    val inflaterService = context.getSystemService(Context.LAYOUT_INFLATER_SERVICE)
+                    if (inflaterService !is LayoutInflater) {
+                        throw IllegalStateException("Layout inflater service not available")
+                    }
+                    inflaterService
+                }
                 view = layoutInflater.inflate(R.layout.app_list_item, null)
             }
 
@@ -227,8 +232,13 @@ open class AppPicker : ListActivity() {
             val info = appList[position]
 
             if (view == null) {
-                val layoutInflater =
-                    context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
+                val layoutInflater: LayoutInflater = run {
+                    val inflaterService = context.getSystemService(Context.LAYOUT_INFLATER_SERVICE)
+                    if (inflaterService !is LayoutInflater) {
+                        throw IllegalStateException("Layout inflater service not available")
+                    }
+                    inflaterService
+                }
                 view = layoutInflater.inflate(android.R.layout.simple_list_item_1, null)
             }
 

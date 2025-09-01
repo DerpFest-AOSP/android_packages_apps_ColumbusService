@@ -13,7 +13,13 @@ import android.view.WindowManagerGlobal
 
 class PowerMenuAction(context: Context) : Action(context) {
     val wm = WindowManagerGlobal.getWindowManagerService()
-    val pm = context.getSystemService(Context.POWER_SERVICE) as PowerManager
+    val pm: PowerManager = run {
+        val powerService = context.getSystemService(Context.POWER_SERVICE)
+        if (powerService !is PowerManager) {
+            throw IllegalStateException("Power service not available")
+        }
+        powerService
+    }
 
     override fun run() {
         if (!pm.isInteractive) {

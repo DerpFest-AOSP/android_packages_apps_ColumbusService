@@ -65,9 +65,18 @@ class ColumbusService : Service(), SharedPreferences.OnSharedPreferenceChangeLis
     }
 
     override fun onCreate() {
-        val vibratorManager = getSystemService(Context.VIBRATOR_MANAGER_SERVICE) as VibratorManager
+        val vibratorService = getSystemService(Context.VIBRATOR_MANAGER_SERVICE)
+        if (vibratorService !is VibratorManager) {
+            throw IllegalStateException("Vibrator service not available")
+        }
+        val vibratorManager = vibratorService
         vibrator = vibratorManager.defaultVibrator
-        val powerManager = getSystemService(Context.POWER_SERVICE) as PowerManager
+        
+        val powerService = getSystemService(Context.POWER_SERVICE)
+        if (powerService !is PowerManager) {
+            throw IllegalStateException("Power service not available")
+        }
+        val powerManager = powerService
         wakelock = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, TAG)
         handler = Handler.createAsync(Looper.getMainLooper())
         prefs = getDePrefs()

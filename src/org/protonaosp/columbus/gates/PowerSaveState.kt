@@ -16,8 +16,13 @@ import android.os.PowerManager.ServiceType
 class PowerSaveState(context: Context, handler: Handler) : Gate(context, handler, 2) {
     private var batterySaverEnabled: Boolean = false
     private var isDeviceInteractive: Boolean = false
-    private val powerManager: PowerManager =
-        context.getSystemService(Context.POWER_SERVICE) as PowerManager
+    private val powerManager: PowerManager = run {
+        val powerService = context.getSystemService(Context.POWER_SERVICE)
+        if (powerService !is PowerManager) {
+            throw IllegalStateException("Power service not available")
+        }
+        powerService
+    }
     private val powerReceiver =
         object : BroadcastReceiver() {
             override fun onReceive(context: Context?, intent: Intent?) {

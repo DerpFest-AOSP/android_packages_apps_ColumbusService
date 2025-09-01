@@ -17,7 +17,13 @@ import org.protonaosp.columbus.TAG
 
 class FlashlightAction(context: Context) : Action(context) {
     private val handler = Handler.createAsync(Looper.getMainLooper())
-    private val cm = context.getSystemService(Context.CAMERA_SERVICE) as CameraManager
+    private val cm: CameraManager = run {
+        val cameraService = context.getSystemService(Context.CAMERA_SERVICE)
+        if (cameraService !is CameraManager) {
+            throw IllegalStateException("Camera service not available")
+        }
+        cameraService
+    }
     private val torchCamId = findCamera()
     private var available = true
     private var enabled = false

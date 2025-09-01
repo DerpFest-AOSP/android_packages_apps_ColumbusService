@@ -22,8 +22,13 @@ import org.protonaosp.columbus.TAG
 
 class ScreenTouch(context: Context, val handler: Handler) : Gate(context, handler, 2) {
     private val clearBlocking = Runnable { setBlocking(false) }
-    private val powerManager: PowerManager =
-        context.getSystemService(Context.POWER_SERVICE) as PowerManager
+    private val powerManager: PowerManager = run {
+        val powerService = context.getSystemService(Context.POWER_SERVICE)
+        if (powerService !is PowerManager) {
+            throw IllegalStateException("Power service not available")
+        }
+        powerService
+    }
     private val powerReceiver =
         object : BroadcastReceiver() {
             override fun onReceive(context: Context?, intent: Intent?) {

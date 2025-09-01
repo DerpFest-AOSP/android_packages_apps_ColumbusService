@@ -13,8 +13,13 @@ import android.os.Handler
 import android.os.PowerManager
 
 class PowerState(context: Context, handler: Handler) : TransientGate(context, handler) {
-    private val powerManager: PowerManager =
-        context.getSystemService(Context.POWER_SERVICE) as PowerManager
+    private val powerManager: PowerManager = run {
+        val powerService = context.getSystemService(Context.POWER_SERVICE)
+        if (powerService !is PowerManager) {
+            throw IllegalStateException("Power service not available")
+        }
+        powerService
+    }
     private val powerReceiver =
         object : BroadcastReceiver() {
             override fun onReceive(context: Context?, intent: Intent?) {

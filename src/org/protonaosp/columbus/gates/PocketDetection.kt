@@ -28,8 +28,13 @@ class PocketDetection(context: Context, val handler: Handler) : Gate(context, ha
         private const val TAG: String = "PocketDetection"
     }
 
-    private val powerManager: PowerManager =
-        context.getSystemService(Context.POWER_SERVICE) as PowerManager
+    private val powerManager: PowerManager = run {
+        val powerService = context.getSystemService(Context.POWER_SERVICE)
+        if (powerService !is PowerManager) {
+            throw IllegalStateException("Power service not available")
+        }
+        powerService
+    }
     private val powerReceiver =
         object : BroadcastReceiver() {
             override fun onReceive(context: Context, intent: Intent) {
@@ -37,7 +42,13 @@ class PocketDetection(context: Context, val handler: Handler) : Gate(context, ha
             }
         }
     private var wasBlocked = false
-    private val sensorManager = context.getSystemService(Context.SENSOR_SERVICE) as SensorManager
+    private val sensorManager: SensorManager = run {
+        val sensorService = context.getSystemService(Context.SENSOR_SERVICE)
+        if (sensorService !is SensorManager) {
+            throw IllegalStateException("Sensor service not available")
+        }
+        sensorService
+    }
     private val proximitySensor: Sensor? = sensorManager.getDefaultSensor(Sensor.TYPE_PROXIMITY)
     private val proximityMax: Float? = proximitySensor?.maximumRange
     private val sensorListener =

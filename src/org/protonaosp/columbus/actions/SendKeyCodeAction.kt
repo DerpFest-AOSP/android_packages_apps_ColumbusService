@@ -14,7 +14,13 @@ import android.view.KeyEvent
 
 open class SendKeyCodeAction(context: Context, val keyCode: Int) : Action(context) {
     private fun triggerVirtualKeypress() {
-        val im: InputManager = context.getSystemService(Context.INPUT_SERVICE) as InputManager
+        val im: InputManager = run {
+            val inputService = context.getSystemService(Context.INPUT_SERVICE)
+            if (inputService !is InputManager) {
+                throw IllegalStateException("Input service not available")
+            }
+            inputService
+        }
         val now: Long = SystemClock.uptimeMillis()
         val downEvent: KeyEvent =
             KeyEvent(

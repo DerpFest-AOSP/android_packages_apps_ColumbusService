@@ -22,7 +22,13 @@ import kotlin.math.sqrt
 // https://stackoverflow.com/questions/11175599/how-to-measure-the-tilt-of-the-phone-in-xy-plane-using-accelerometer-in-android/15149421#15149421
 class TableDetection(context: Context, val handler: Handler) : Gate(context, handler, 2) {
 
-    private val sensorManager = context.getSystemService(Context.SENSOR_SERVICE) as SensorManager
+    private val sensorManager: SensorManager = run {
+        val sensorService = context.getSystemService(Context.SENSOR_SERVICE)
+        if (sensorService !is SensorManager) {
+            throw IllegalStateException("Sensor service not available")
+        }
+        sensorService
+    }
     private val accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER)
     private val sensorListener =
         object : SensorEventListener {

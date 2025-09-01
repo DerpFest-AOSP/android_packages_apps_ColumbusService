@@ -26,8 +26,13 @@ class CHRESensor(val context: Context, var sensitivity: Float, val handler: Hand
     private var isListening: Boolean = false
 
     init {
-        contextHubManager =
-            context.getSystemService(Context.CONTEXTHUB_SERVICE) as ContextHubManager
+        contextHubManager = run {
+            val contextHubService = context.getSystemService(Context.CONTEXTHUB_SERVICE)
+            if (contextHubService !is ContextHubManager) {
+                throw IllegalStateException("Context Hub service not available")
+            }
+            contextHubService
+        }
         callback = CHRECallback()
     }
 
