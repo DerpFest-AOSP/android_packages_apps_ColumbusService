@@ -45,12 +45,8 @@ class SystemKeyPress(context: Context, handler: Handler) : Gate(context, handler
         }
 
     private fun dispose() {
-        if (inputEventReceiver != null) {
-            inputEventReceiver!!.dispose()
-        }
-        if (inputMonitor != null) {
-            inputMonitor!!.dispose()
-        }
+        inputEventReceiver?.dispose()
+        inputMonitor?.dispose()
     }
 
     private fun isBlockingKeys(keyEvent: KeyEvent): Boolean {
@@ -61,7 +57,7 @@ class SystemKeyPress(context: Context, handler: Handler) : Gate(context, handler
         if (inputEventReceiver != null) return
         inputMonitor = InputMonitorCompat(TAG, 0)
         inputEventReceiver =
-            inputMonitor!!.getInputReceiver(
+            inputMonitor?.getInputReceiver(
                 Looper.getMainLooper(),
                 Choreographer.getInstance(),
                 inputEventListener,

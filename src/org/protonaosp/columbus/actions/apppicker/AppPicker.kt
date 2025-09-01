@@ -108,7 +108,7 @@ open class AppPicker : ListActivity() {
                     activity.pm.getInstalledApplications(PackageManager.GET_META_DATA)
                 )
             activity.adapter =
-                Adapter(activity, R.layout.app_list_item, activity.applist!!, activity.pm)
+                Adapter(activity, R.layout.app_list_item, activity.applist ?: mutableListOf(), activity.pm)
             return null
         }
 
@@ -191,13 +191,13 @@ open class AppPicker : ListActivity() {
             }
 
             if (info != null) {
-                val appName = view!!.findViewById<TextView>(R.id.app_name)
+                val appName = view.findViewById<TextView>(R.id.app_name)
                 val iconView = view.findViewById<ImageView>(R.id.app_icon)
 
                 appName.text = info.loadLabel(_pm)
                 iconView.setImageDrawable(info.loadIcon(_pm))
             }
-            return view!!
+            return view
         }
     }
 
@@ -233,13 +233,13 @@ open class AppPicker : ListActivity() {
             }
 
             if (info != null) {
-                val appName = view!!.findViewById<TextView>(android.R.id.text1)
+                val appName = view.findViewById<TextView>(android.R.id.text1)
 
                 val name = info.name
                 appName.text = name
             }
 
-            return view!!
+            return view
         }
     }
 }

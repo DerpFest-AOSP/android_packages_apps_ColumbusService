@@ -18,13 +18,14 @@ class ColumbusCustomApp : AppPicker() {
     override fun onListItemClick(l: ListView, v: View, position: Int, id: Long) {
         if (!mIsActivitiesList) {
             // we are in the Apps list
-            val packageName = applist!![position].packageName
-            val friendlyAppString = applist!![position].loadLabel(pm).toString()
+            val packageName = applist?.get(position)?.packageName ?: return
+            val friendlyAppString = applist?.get(position)?.loadLabel(pm)?.toString() ?: return
             setPackage(packageName, friendlyAppString)
             setPackageActivity(null)
         } else if (mIsActivitiesList) {
             // we are in the Activities list
-            setPackageActivity(mActivitiesList!![position])
+            val activityInfo = mActivitiesList?.get(position) ?: return
+            setPackageActivity(activityInfo)
         }
 
         mIsActivitiesList = false
@@ -33,8 +34,8 @@ class ColumbusCustomApp : AppPicker() {
 
     override fun onLongClick(position: Int) {
         if (mIsActivitiesList) return
-        val packageName = applist!![position].packageName
-        val friendlyAppString = applist!![position].loadLabel(pm).toString()
+        val packageName = applist?.get(position)?.packageName ?: return
+        val friendlyAppString = applist?.get(position)?.loadLabel(pm)?.toString() ?: return
         // always set xxx_SQUEEZE_CUSTOM_APP so we can fallback if something goes wrong with
         // pm.getPackageInfo
         setPackage(packageName, friendlyAppString)

@@ -55,19 +55,15 @@ class ScreenTouch(context: Context, val handler: Handler) : Gate(context, handle
         }
 
     private fun dispose() {
-        if (inputEventReceiver != null) {
-            inputEventReceiver!!.dispose()
-        }
-        if (inputMonitor != null) {
-            inputMonitor!!.dispose()
-        }
+        inputEventReceiver?.dispose()
+        inputMonitor?.dispose()
     }
 
     fun startListeningForTouch() {
         if (inputEventReceiver != null) return
         inputMonitor = InputMonitorCompat(TAG, 0)
         inputEventReceiver =
-            inputMonitor!!.getInputReceiver(
+            inputMonitor?.getInputReceiver(
                 Looper.getMainLooper(),
                 Choreographer.getInstance(),
                 inputEventListener,
