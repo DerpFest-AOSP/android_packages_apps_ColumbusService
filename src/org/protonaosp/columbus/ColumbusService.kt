@@ -125,6 +125,9 @@ class ColumbusService : Service(), SharedPreferences.OnSharedPreferenceChangeLis
             wakelock.release()
         }
 
+        // Cleanup current action
+        action.destroy()
+        
         // Clear references
         action = DummyAction(this)
         super.onDestroy()
@@ -162,6 +165,9 @@ class ColumbusService : Service(), SharedPreferences.OnSharedPreferenceChangeLis
     private fun updateAction() {
         val key = prefs.getAction(this)
         dlog(TAG, "Setting action to $key")
+        
+        // Cleanup old action before creating new one
+        action.destroy()
         action = createAction(key)
 
         // For settings
