@@ -12,9 +12,9 @@ import android.content.SharedPreferences
 import android.os.Bundle
 import androidx.preference.ListPreference
 import androidx.preference.Preference
-import androidx.preference.PreferenceFragmentCompat
 import androidx.preference.SwitchPreferenceCompat
 import com.android.settingslib.widget.MainSwitchPreference
+import com.android.settingslib.widget.SettingsBasePreferenceFragment
 import com.android.settingslib.widget.SliderPreference
 import org.protonaosp.columbus.PREFS_NAME
 import org.protonaosp.columbus.R
@@ -29,7 +29,7 @@ import org.protonaosp.columbus.getLaunchActionAppName
 import org.protonaosp.columbus.getSensitivity
 
 class SettingsFragment :
-    PreferenceFragmentCompat(), SharedPreferences.OnSharedPreferenceChangeListener {
+    SettingsBasePreferenceFragment(), SharedPreferences.OnSharedPreferenceChangeListener {
     private lateinit var prefs: SharedPreferences
     private lateinit var mContext: Context
 
