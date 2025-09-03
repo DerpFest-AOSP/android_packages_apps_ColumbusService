@@ -102,6 +102,8 @@ class ColumbusService : Service(), SharedPreferences.OnSharedPreferenceChangeLis
             )
 
         updateHapticIntensity()
+        // Initialize action before calling updateAction
+        action = createAction(prefs.getAction(this))
         updateAction()
         updateSensitivity()
         updateEnabled()
@@ -176,7 +178,9 @@ class ColumbusService : Service(), SharedPreferences.OnSharedPreferenceChangeLis
         dlog(TAG, "Setting action to $key")
         
         // Cleanup old action before creating new one
-        action.destroy()
+        if (::action.isInitialized) {
+            action.destroy()
+        }
         action = createAction(key)
 
         // For settings
