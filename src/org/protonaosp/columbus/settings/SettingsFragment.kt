@@ -242,6 +242,7 @@ class SettingsFragment :
                 setHapticFeedbackMode(SliderPreference.HAPTIC_FEEDBACK_MODE_ON_TICKS)
                 setSliderIncrement(1)
                 setTickVisible(true)
+                setUpdatesContinuously(true)
             }
             setValue(prefs.getSensitivity(_context))
         }
@@ -270,6 +271,7 @@ class SettingsFragment :
                 setHapticFeedbackMode(SliderPreference.HAPTIC_FEEDBACK_MODE_ON_TICKS)
                 sliderIncrement = 1
                 setTickVisible(true)
+                setUpdatesContinuously(true)
             }
             value = prefs.getHapticIntensity(_context)
             if (!initialize) {
