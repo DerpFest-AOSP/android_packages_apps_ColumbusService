@@ -217,6 +217,7 @@ class SettingsFragment :
                                 requireActivity()
                                     .supportFragmentManager
                                     .beginTransaction()
+                                    .setReorderingAllowed(true)
                                     .replace(
                                         com.android.settingslib.collapsingtoolbar.R.id
                                             .content_frame,
