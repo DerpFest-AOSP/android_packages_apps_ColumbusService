@@ -50,14 +50,14 @@ class SettingsFragment :
     SelectorWithWidgetPreference.OnClickListener {
 
     private var currentUser: Int = -1
-    private lateinit var prefs: SharedPreferences
+    private var prefs: SharedPreferences? = null
     private val _context by lazy { requireContext() }
 
     private val vibrator by lazy {
-        (_context.getSystemService(Context.VIBRATOR_MANAGER_SERVICE) as VibratorManager)
-            .defaultVibrator
+        (_context.getSystemService(Context.VIBRATOR_MANAGER_SERVICE) as? VibratorManager)
+            ?.defaultVibrator
     }
-    private lateinit var launcherApps: LauncherApps
+    private var launcherApps: LauncherApps? = null
 
     private var actionCategory: PreferenceCategory? = null
 
@@ -95,7 +95,7 @@ class SettingsFragment :
         preferenceManager.sharedPreferencesName = PREFS_NAME
 
         prefs = _context.getDePrefs()
-        prefs.registerOnSharedPreferenceChangeListener(this)
+        prefs?.registerOnSharedPreferenceChangeListener(this)
         actionCategory =
             preferenceScreen.findPreference<PreferenceCategory>(
                 getString(R.string.categ_key_action)
@@ -115,7 +115,7 @@ class SettingsFragment :
 
     override fun onDestroyView() {
         super.onDestroyView()
-        prefs.unregisterOnSharedPreferenceChangeListener(this)
+        prefs?.unregisterOnSharedPreferenceChangeListener(this)
     }
 
     override fun onSharedPreferenceChanged(prefs: SharedPreferences, key: String?) {
@@ -133,6 +133,7 @@ class SettingsFragment :
 
     override fun onRadioButtonClicked(emiter: SelectorWithWidgetPreference) {
         if (emiter !is RadioButtonPreference) return
+        val prefs = prefs ?: return
 
         val key = emiter.key
         if (key == prefs.getAction(_context)) {
@@ -146,6 +147,7 @@ class SettingsFragment :
 
     private fun updateActionState() {
         val actionCategory = actionCategory ?: return
+        val prefs = prefs ?: return
 
         val preferenceCount = actionCategory.preferenceCount
         if (preferenceCount == 0) {
@@ -173,6 +175,7 @@ class SettingsFragment :
     }
 
     private suspend fun preloadAppIcons() {
+        val launcherApps = launcherApps ?: return
         withContext(Dispatchers.IO) {
             val cacheManager = AppIconCacheManager.getInstance()
             val activityLists = launcherApps.getActivityList(null, UserHandle.of(currentUser))
@@ -285,6 +288,7 @@ class SettingsFragment :
     }
 
     private fun updateEnabled() {
+        val prefs = prefs ?: return
         val enabled = prefs.getEnabled(_context)
         prefEnabled?.apply {
             setChecked(enabled)
@@ -300,6 +304,7 @@ class SettingsFragment :
     }
 
     private fun updateSensitivity(initialize: Boolean = false) {
+        val prefs = prefs ?: return
         prefSensitivity?.apply {
             if (initialize) {
                 setHapticFeedbackMode(SliderPreference.HAPTIC_FEEDBACK_MODE_ON_TICKS)
@@ -312,6 +317,7 @@ class SettingsFragment :
     }
 
     private fun updateAllowScreenOff() {
+        val prefs = prefs ?: return
         prefAllowScreenOff?.apply {
             val screenForced =
                 prefs.getBoolean(getString(R.string.pref_key_allow_screen_off_action_forced), false)
@@ -329,6 +335,7 @@ class SettingsFragment :
     }
 
     private fun updateHapticIntensity(initialize: Boolean = false) {
+        val prefs = prefs ?: return
         prefHapticIntensity?.apply {
             if (initialize) {
                 sliderIncrement = 1
@@ -344,7 +351,7 @@ class SettingsFragment :
                         2 -> EFFECT_HEAVY_CLICK
                         else -> EFFECT_HEAVY_CLICK
                     }
-                vibrator.vibrate(vibDoubleTap, sonicAudioAttr)
+                vibrator?.vibrate(vibDoubleTap, sonicAudioAttr)
             }
         }
     }
