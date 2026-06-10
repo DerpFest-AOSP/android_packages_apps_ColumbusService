@@ -144,6 +144,7 @@ class ColumbusService : Service(), SharedPreferences.OnSharedPreferenceChangeLis
     private fun createAction(key: String): Action {
         return when (key) {
             "screenshot" -> ScreenshotAction(this)
+            "partial_screenshot" -> PartialScreenshotAction(this)
             "assistant" -> AssistantAction(this)
             "silence_call" -> SilenceCallAction(this)
             "media" -> PlayPauseAction(this)
