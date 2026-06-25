@@ -23,9 +23,11 @@ android_app {
     privapp_allowlist: "privapp_whitelist_org.protonaosp.columbus.xml",
     static_libs: [
         "kotlin-stdlib",
-        "androidx.preference_preference",
+        "androidx.autofill_autofill",
+        "androidx.compose.ui_ui",
         "androidx.core_core-ktx",
         "androidx.lifecycle_lifecycle-runtime-ktx",
+        "androidx.preference_preference",
         "tensorflowlite_java",
         "SettingsLib",
         "SettingsLibSettingsTheme",
