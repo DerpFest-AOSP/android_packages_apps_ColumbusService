@@ -62,6 +62,7 @@ class CHRESensor(val context: Context, var sensitivity: Float, val handler: Hand
 
         fun setListening(listening: Boolean) {
             if (listening) {
+                if (isListening) return
                 val contextHubManager = contextHubManager ?: return
                 val callback = callback ?: return
                 val hub = contextHubManager.contextHubs.firstOrNull() ?: return
@@ -72,10 +73,14 @@ class CHRESensor(val context: Context, var sensitivity: Float, val handler: Hand
                 msg.sensitivity = sensitivity
 
                 sendNanoappMsg(ContextHubMessages.RECOGNIZER_START, MessageNano.toByteArray(msg))
-                setListening(true)
+                // Update the outer sensor's listening flag (this@CHRESensor), NOT a
+                // recursive call back into this method.
+                this@CHRESensor.setListening(true)
             } else {
+                if (!isListening) return
                 sendNanoappMsg(ContextHubMessages.RECOGNIZER_STOP, ByteArray(0))
-                setListening(false)
+                this@CHRESensor.setListening(false)
+                client?.close()
             }
         }
 
