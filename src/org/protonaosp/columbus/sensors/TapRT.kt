@@ -13,6 +13,9 @@ import java.util.Deque
 import kotlin.math.max
 import org.protonaosp.columbus.actions.*
 
+// NOTE: the IMU filter parameters, frame sizes and double-tap timing windows below are
+// reverse-engineered from stock Quick Tap DSP and tuned empirically. Do NOT retune them
+// without on-device gesture validation.
 open class TapRT(val context: Context, val sizeWindowNs: Long) :
     EventIMURT(sizeWindowNs, 50, 50 * 6) {
 
@@ -27,7 +30,6 @@ open class TapRT(val context: Context, val sizeWindowNs: Long) :
     var wasPeakApproaching: Boolean = true
 
     init {
-        tflite = TfClassifier(context)
         lowpassAcc.para = 1f
         lowpassGyro.para = 1f
         highpassAcc.para = 0.05f
@@ -159,6 +161,11 @@ open class TapRT(val context: Context, val sizeWindowNs: Long) :
         val _featureVector = featureVector
         featureVector = scaleGyroData(_featureVector, 10f)
 
+        // Lazily load the TFLite model + native runtime only when ML mode is actually used
+        // (heuristic mode never calls this, so it never pays the load cost).
+        if (tflite == null) {
+            tflite = TfClassifier(context)
+        }
         val predict = tflite?.predict(_featureVector, 7)
 
         if (predict.isNullOrEmpty()) {

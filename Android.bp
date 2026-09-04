@@ -22,7 +22,6 @@ android_app {
     privileged: true,
     privapp_allowlist: "privapp_whitelist_org.protonaosp.columbus.xml",
     static_libs: [
-        "kotlin-stdlib",
         "androidx.autofill_autofill",
         "androidx.compose.ui_ui",
         "androidx.core_core-ktx",

@@ -64,7 +64,8 @@ class CHRESensor(val context: Context, var sensitivity: Float, val handler: Hand
             if (listening) {
                 val contextHubManager = contextHubManager ?: return
                 val callback = callback ?: return
-                client = contextHubManager.createClient(contextHubManager.contextHubs[0], callback)
+                val hub = contextHubManager.contextHubs.firstOrNull() ?: return
+                client = contextHubManager.createClient(hub, callback)
 
                 val msg = ContextHubMessages.RecognizerStart()
                 // Only report events to AP if gesture is halfway done
