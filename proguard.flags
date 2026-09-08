@@ -20,3 +20,11 @@
 -keep,allowoptimization,allowaccessmodification class com.android.systemui.** { *; }
 -keep,allowoptimization,allowaccessmodification class org.protonaosp.** { *; }
 -keep,allowoptimization,allowaccessmodification class org.tensorflow.** { *; }
+
+# The resource processor only generates R classes for libraries whose
+# resources the app links. The Android 17 androidx.autofill and
+# androidx.compose.ui prebuilts arrive transitively through SettingsLib and
+# refer to their own R classes from code Columbus never reaches, so R8 must
+# not treat those as missing.
+-dontwarn androidx.autofill.R$*
+-dontwarn androidx.compose.ui.R$*
