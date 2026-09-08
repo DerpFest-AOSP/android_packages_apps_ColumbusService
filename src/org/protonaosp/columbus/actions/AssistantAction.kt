@@ -6,20 +6,21 @@
 
 package org.protonaosp.columbus.actions
 
+import android.app.SearchManager
 import android.content.Context
 import android.os.Bundle
-import android.os.ServiceManager
-import com.android.internal.statusbar.IStatusBarService
 import org.protonaosp.columbus.TAG
 import org.protonaosp.columbus.dlog
 
 class AssistantAction(context: Context) : Action(context) {
-    val service =
-        IStatusBarService.Stub.asInterface(ServiceManager.getService(Context.STATUS_BAR_SERVICE))
+    // Android 17 dropped IStatusBarService.startAssist(); SearchManager.launchAssist() is the
+    // system API that reaches the same AssistManager path in SystemUI.
+    private val searchManager = context.getSystemService(Context.SEARCH_SERVICE) as SearchManager?
 
     override fun run() {
         try {
-            service.startAssist(Bundle())
+            searchManager?.launchAssist(Bundle())
+                ?: dlog(TAG, "Failed to start assistant: SearchManager unavailable")
         } catch (e: Exception) {
             dlog(TAG, "Failed to start assistant: unexpected error ${e}")
         }
