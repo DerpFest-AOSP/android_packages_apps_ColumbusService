@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+    <string name="app_name">背面輕觸服務</string>
+    <string name="quick_settings_label">背面輕觸</string>
+    <string name="settings_entry_title">輕觸背面兩下以執行動作</string>
+    <string name="settings_entry_summary_on">開啟 / <xliff:g id="action" example="Take screenshot">%1$s</xliff:g></string>
+    <string name="settings_entry_summary_off">關閉</string>
+    <string name="settings_search_keywords">背面輕觸,背面雙擊,輕觸,手勢,輔助,助理</string>
+    <string name="setting_enabled_title">使用背面輕觸</string>
+    <string name="setting_footer_content">輕觸手機背面中央附近兩下，即可執行動作</string>
+    <string name="setting_sensitivity_title">靈敏度</string>
+    <string name="setting_sensitivity_light">輕觸</string>
+    <string name="setting_sensitivity_heavy">用力輕敲</string>
+    <string name="setting_haptic_intensity_title">觸覺回饋強度</string>
+    <string name="setting_haptic_intensity_light">輕</string>
+    <string name="setting_haptic_intensity_strong">強</string>
+    <string name="setting_screen_off_title">螢幕關閉時允許</string>
+    <string name="setting_screen_off_summary">可能會增加誤觸發</string>
+    <string name="setting_screen_off_blocked_summary">目前選擇的動作不允許使用</string>
+    <string name="setting_action_title">輕觸手機背面兩下即可</string>
+    <string name="launch_settings_activity_title">背面輕觸設定</string>
+    <string name="setting_app_selection_help_text">選擇輕觸手機背面兩下時要開啟的應用程式。如果解除安裝該應用程式，背面輕觸功能會關閉，直到你選擇另一個應用程式。</string>
+    <string name="setting_app_selection_help_text_disabled">請先啟用背面輕觸，才能使用這項功能。</string>
+    <string name="setting_app_shortcut_selection_help_text">選擇使用背面輕觸時要執行的動作。之後可以在設定中變更。</string>
+    <string name="radio_button_extra_widget_a11y_label"><xliff:g id="action">%1$s</xliff:g>設定</string>
+    <string name="setting_action_launch_summary_no_selection">尚未選擇應用程式</string>
+    <string name="setting_action_launch_summary_not_installed">未安裝應用程式</string>
+    <string name="action_screenshot_name">擷取螢幕畫面</string>
+    <string name="action_partial_screenshot_name">擷取部分螢幕畫面</string>
+    <string name="action_assistant_name">開啟數位助理</string>
+    <string name="action_contextual_search_name">搜尋螢幕上的內容</string>
+    <string name="action_silence_call_name">將來電設為靜音</string>
+    <string name="action_media_name">媒體播放/暫停</string>
+    <string name="action_overview_name">查看最近使用的應用程式</string>
+    <string name="action_notifications_name">顯示通知</string>
+    <string name="action_camera_name">開啟相機</string>
+    <string name="action_power_menu_name">開啟電源選單</string>
+    <string name="action_mute_name">將來電與通知設為靜音</string>
+    <string name="action_flashlight_name">開啟或關閉手電筒</string>
+    <string name="action_screen_name">開啟或關閉螢幕</string>
+    <string name="action_launch_name">開啟應用程式</string>
+    <string name="gesture_detected">偵測到輕觸背面兩下！</string>
+</resources>
